@@ -72,15 +72,15 @@ const makeQuestion = ({ questionList , amount = 10 , questionListView , answerLi
   if ( isNaN(amount) ) amount = 10 ;
 
   questionListView.innerHTML = '' ;
-  answerListView.innerHTML = 'Answer : ' ;
 
   const resultList = makeResultList(questionList, amount) ;
 
   resultList.forEach(( question ) => {
     makeQuestionView(question,questionListView) ;
-    makeAnswerListView(question,answerListView) ;
   })
 
+  const answers = resultList.map(question => String.fromCharCode(65 + question.answer));
+  answerListView.textContent = 'Answer : ' + answers.join(', ');
 }
 
 const questionListView = document.createElement('ol') ;
@@ -93,7 +93,7 @@ const makeQuestionButton = document.createElement('button') ;
 makeQuestionButton.textContent = ' Generate ' ;
 makeQuestionButton.addEventListener('click',() => {
   makeQuestion({
-    amount : parseInt(amountInputView.value) ,
+    amount : parseInt(amountInputView.value, 10) ,
     questionList : QuestionList ,
     questionListView ,
     answerListView
