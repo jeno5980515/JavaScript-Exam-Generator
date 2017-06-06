@@ -370,10 +370,10 @@ console.log( arr1.length, arr2.length);` ,
 		title : 
 `What would the following lines of code output to the console?
  
-console.log("0 || 1 = "+(0 || 1));
-console.log("1 || 2 = "+(1 || 2));
-console.log("0 && 1 = "+(0 && 1));
-console.log("1 && 2 = "+(1 && 2));` ,
+console.log(0 || 1);
+console.log(1 || 2);
+console.log(0 && 1);
+console.log(1 && 2);` ,
 		answer : 0 ,
 		options : [
 			'1102',
