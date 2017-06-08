@@ -116,9 +116,16 @@ const saveButton = document.createElement('button');
 saveButton.textContent = 'Save' ;
 saveButton.addEventListener('click',() => {
   let questionFile = htmlDocx.asBlob(questionListView.outerHTML);
-  saveAs(questionFile, 'test.docx');
+  //saveAs(questionFile, 'test.docx');
   let answerFile = htmlDocx.asBlob(answerListView.outerHTML);
-  saveAs(answerFile, 'answer.docx');
+  //saveAs(answerFile, 'answer.docx');
+  let zip = new JSZip();
+  let folder = zip.folder("Innova-Question");
+  folder.file("question.docx", questionFile, {blob: true});
+  folder.file("answer.docx", answerFile, {blob: true});
+  zip.generateAsync({type:"blob"}).then(function(content) {
+      saveAs(content, "Innova-Question.zip");
+  });
 })
 
 document.body.appendChild(amountInputView);
