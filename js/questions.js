@@ -144,10 +144,10 @@ console.log(3);` ,
     title : 'Which of the following will return 6?',
     answer : 2 ,
     options : [
-      '[1,2,3].map(function(x, y) { return x+ y; })',
+      '[1,2,3].map(function(x, y) { return x + y; })',
       '[1,2,3].forEach(function(x, y) { return x + y})',
       '[1,2,3].reduce(function(x, y) { return x + y})',
-      'none of above'
+      '[1,2,3].join("+")'
     ]
   },
   {
@@ -327,7 +327,7 @@ console.log(arr);` ,
       'variable scope',
       'syntax',
       'convention',
-      'none of above'
+      'prevent runtime error'
     ]
   },
   {
