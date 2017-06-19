@@ -10,7 +10,35 @@ const shuffleArray = (array) => {
   return suffledArray ;
 }
 
-const makeResultList = (questionList,amount) => {
+const changeAnswerOrder = ({ resultList = [] , value = '' }) => {
+  let newResultList = [...resultList] ;
+  const resultAmount = newResultList.length ;
+
+  for ( let index = 0 ; index < resultAmount ; index ++ ){
+
+    let nowOrderAnswer = value[index] ;
+    if ( nowOrderAnswer === undefined ) break ;
+    nowOrderAnswer = nowOrderAnswer.charCodeAt()-97 ;
+
+    const result = newResultList[index] ;
+    const nowRealAnswer = parseInt(result.answer,10) ;
+
+    if ( nowRealAnswer !== nowOrderAnswer ){
+      let options = result.options ;
+      let tempAnswerOption = options[nowRealAnswer] ;
+      options[nowRealAnswer] = options[nowOrderAnswer] ;
+      options[nowOrderAnswer] = tempAnswerOption ;
+      result.answer = nowOrderAnswer ;
+    }
+  }
+
+  return newResultList ;
+}
+
+const makeResultList = ({ questionList , value = 10 , mode }) => {
+
+  let amount = value ;
+  if ( mode === 'order' ) amount = value.length ;
 
   let resultList = [] ;
 
@@ -24,9 +52,13 @@ const makeResultList = (questionList,amount) => {
 
   const remainAmount = amount-isNeedQuestionList.length > 0 ? amount-isNeedQuestionList.length : 0 ;
 
-  const shuffledRemainQuestionList = shuffleArray(remainQuestionList);
+  const shuffledRemainQuestionList = shuffleArray(remainQuestionList).slice(0,remainAmount);
 
-  resultList = shuffledRemainQuestionList.slice(0,remainAmount).concat(isNeedQuestionList).sort(() => .5 - Math.random()) ;
+  resultList = shuffleArray([...isNeedQuestionList,...shuffledRemainQuestionList]) ;
+
+  if ( mode === 'order' ){
+    resultList = changeAnswerOrder({ resultList , value });
+  }
 
   return resultList ;
 
@@ -68,36 +100,59 @@ const makeAnswerListView = (question,answerListView) => {
   answerListView.textContent += String.fromCharCode(65 + question.answer)  + ',' ;
 }
 
-const makeQuestion = ({ questionList , amount = 10 , questionListView , answerListView }) => {
-  if ( isNaN(amount) ) amount = 10 ;
+const makeQuestion = ({ questionList , mode = 'amount' , value = 10 , questionListView , answerListView }) => {
+  
+  if ( mode === 'amount' && value === '' ) value = 10 ;
 
   questionListView.innerHTML = '' ;
 
-  const resultList = makeResultList(questionList, amount) ;
-
+  const resultList = makeResultList({ questionList, value , mode }) ;
   resultList.forEach(( question ) => {
     makeQuestionView(question,questionListView) ;
   })
 
   const answers = resultList.map(question => String.fromCharCode(65 + question.answer));
   answerListView.textContent = 'Answer : ' + answers.join(', ');
+
 }
 
 const questionListView = document.createElement('ol') ;
 
 const amountInputView = document.createElement('input') ;
-amountInputView.placeholder = 'Question Amount' ;
-amountInputView.width = '200px' ;
+amountInputView.placeholder = 'Input question Amount or the answer order you need.' ;
 
 const makeQuestionButton = document.createElement('button') ;
 makeQuestionButton.textContent = ' Generate ' ;
-makeQuestionButton.addEventListener('click',() => {
-  makeQuestion({
-    amount : parseInt(amountInputView.value, 10) ,
-    questionList : QuestionList ,
-    questionListView ,
-    answerListView
-  })
+
+const checkMode = (value) => {
+  if ( /^[a-d]+$/.test(value) ){
+    return 'order' ;
+  } else if ( /^[0-9]+$/.test(value) || value === '' ){
+    return 'amount' ;
+  } else {
+    return 'error' ;
+  }
+}
+
+const makeQuestionEvent = (value) => {
+  value = value.replace(/\s/g,'').toLowerCase() ; 
+  let mode = checkMode(value); 
+  if ( mode === 'error' ) {
+    alert('Input format error !') ;
+  } else {
+    let questionConfig = {
+      mode ,
+      value ,
+      questionList : QuestionList ,
+      questionListView ,
+      answerListView
+    }
+    makeQuestion(questionConfig) ;
+  } 
+}
+
+makeQuestionButton.addEventListener('click', ()=> {
+  makeQuestionEvent(amountInputView.value);
 });
 
 const selectContentButton = document.createElement('button');
@@ -114,11 +169,10 @@ const answerListView = document.createElement('h4') ;
 
 const saveButton = document.createElement('button');
 saveButton.textContent = 'Save' ;
-saveButton.addEventListener('click',() => {
+
+const saveFile = () => {
   let questionFile = htmlDocx.asBlob(questionListView.outerHTML);
-  //saveAs(questionFile, 'test.docx');
   let answerFile = htmlDocx.asBlob(answerListView.outerHTML);
-  //saveAs(answerFile, 'answer.docx');
   let zip = new JSZip();
   let folder = zip.folder("Innova-Question");
   folder.file("question.docx", questionFile, {blob: true});
@@ -126,7 +180,9 @@ saveButton.addEventListener('click',() => {
   zip.generateAsync({type:"blob"}).then(function(content) {
       saveAs(content, "Innova-Question.zip");
   });
-})
+}
+
+saveButton.addEventListener('click', saveFile ) ;
 
 document.body.appendChild(amountInputView);
 document.body.appendChild(makeQuestionButton);
