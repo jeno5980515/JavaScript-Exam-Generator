@@ -16,7 +16,7 @@ const QuestionList = [
   },
   {
     title :
-`How many ‘bar’ will be outputted to console?
+`How many 'bar' will be outputted to console?
 
 var myObject = {
 foo: "bar",
@@ -182,7 +182,7 @@ var key = 'a';` ,
   },
   {
     title :
-`Which will output ‘Hi, I am Neil’ in console?
+`Which will output 'Hi, I am Neil' in console?
 var obj = { name: 'Neil' }
 function sayHi(name) {
     console.log('Hi, I am ' + this.name);
