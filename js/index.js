@@ -174,9 +174,8 @@ const saveFile = () => {
   let questionFile = htmlDocx.asBlob(questionListView.outerHTML);
   let answerFile = htmlDocx.asBlob(answerListView.outerHTML);
   let zip = new JSZip();
-  let folder = zip.folder("Innova-Question");
-  folder.file("question.docx", questionFile, {blob: true});
-  folder.file("answer.docx", answerFile, {blob: true});
+  zip.file("question.docx", questionFile, {blob: true});
+  zip.file("answer.docx", answerFile, {blob: true});
   zip.generateAsync({type:"blob"}).then(function(content) {
       saveAs(content, "Innova-Question.zip");
   });
